@@ -15,8 +15,25 @@ impl Conway {
         }
     }
 
+    pub fn get(&self, x: usize, y: usize) -> bool {
+        self.cells[x + y * self.height]
+    }
+
     pub fn set(&mut self, x: usize, y: usize, value: bool) {
         self.cells[x + y * self.height] = value;
+    }
+
+    pub fn tick(&mut self) {
+        let mut next = vec![false; self.width * self.height];
+
+        for x in 0..self.width {
+            for y in 0..self.height {
+                let cell = self.get(x, y);
+                next[x + y * self.width] = cell;
+            }
+        }
+
+        self.cells = next;
     }
 }
 
@@ -46,6 +63,10 @@ fn main() {
     conway.set(2, 2, true);
     conway.set(3, 1, true);
     conway.set(3, 3, true);
+
+    println!("{}", conway);
+
+    conway.tick();
 
     println!("{}", conway);
 }
