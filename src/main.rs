@@ -1,4 +1,9 @@
-use std::fmt;
+extern crate minifb;
+
+use minifb::{Key, Scale, WindowOptions, Window};
+
+const WIDTH: usize = 10;
+const HEIGHT: usize = 10;
 
 struct Conway {
     width: usize,
@@ -51,38 +56,43 @@ impl Conway {
     fn compute_state(current_state: bool, live_neighbors: usize) -> bool {
         live_neighbors == 3 || (live_neighbors == 2 && current_state == true)
     }
-}
 
-impl fmt::Display for Conway {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "+{}+\n", "--".repeat(self.width))?;
-
-        for row in self.cells.chunks(self.width) {
-            write!(f, "|")?;
-            for cell in row {
-                write!(f, "{}", if *cell { "()" } else { "  " })?;
-            }
-            write!(f, "|\n")?;
-        }
-
-        write!(f, "+{}+\n", "--".repeat(self.width))?;
-
-        Ok(())
+    fn write_to_buffer(&self, buffer: &mut [u32]) {
+        self.cells.iter().zip(buffer).for_each(|(cell, pixel)|
+            *pixel = if *cell { 0x00000000 } else { 0x00ffffff }
+        )
     }
 }
 
 fn main() {
-    let mut conway = Conway::new(10, 10);
+    let mut conway = Conway::new(WIDTH, HEIGHT);
 
-    conway.set(1, 1, true);
-    conway.set(1, 3, true);
+    conway.set(0, 1, true);
+    conway.set(1, 2, true);
+    conway.set(2, 0, true);
+    conway.set(2, 1, true);
     conway.set(2, 2, true);
-    conway.set(3, 1, true);
-    conway.set(3, 3, true);
 
-    println!("{}", conway);
+    let window_options = WindowOptions { scale: Scale::X16, ..WindowOptions::default() };
+    let mut window = Window::new("Conway", WIDTH, HEIGHT, window_options).unwrap();
+    let mut buffer: Vec<u32> = vec![0; WIDTH * HEIGHT];
+    conway.write_to_buffer(&mut buffer);
+    window.update_with_buffer(&buffer).unwrap();
 
-    conway.tick();
-
-    println!("{}", conway);
+    let mut space_down = false;
+    while window.is_open() && !window.is_key_down(Key::Escape) {
+        if window.is_key_down(Key::Space) {
+            if !space_down {
+                space_down = true;
+                conway.tick();
+                conway.write_to_buffer(&mut buffer);
+                window.update_with_buffer(&buffer).unwrap();
+            } else {
+                window.update();
+            }
+        } else {
+            space_down = false;
+            window.update();
+        }
+    }
 }
