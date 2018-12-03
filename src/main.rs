@@ -1,6 +1,6 @@
 extern crate minifb;
 
-use minifb::{Key, Scale, WindowOptions, Window};
+use minifb::{Key, KeyRepeat, Scale, WindowOptions, Window};
 
 const WIDTH: usize = 10;
 const HEIGHT: usize = 10;
@@ -79,19 +79,12 @@ fn main() {
     conway.write_to_buffer(&mut buffer);
     window.update_with_buffer(&buffer).unwrap();
 
-    let mut space_down = false;
     while window.is_open() && !window.is_key_down(Key::Escape) {
-        if window.is_key_down(Key::Space) {
-            if !space_down {
-                space_down = true;
-                conway.tick();
-                conway.write_to_buffer(&mut buffer);
-                window.update_with_buffer(&buffer).unwrap();
-            } else {
-                window.update();
-            }
+        if window.is_key_pressed(Key::Space, KeyRepeat::Yes) {
+            conway.tick();
+            conway.write_to_buffer(&mut buffer);
+            window.update_with_buffer(&buffer).unwrap();
         } else {
-            space_down = false;
             window.update();
         }
     }
