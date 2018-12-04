@@ -63,12 +63,6 @@ impl Conway {
     fn compute_state(current_state: bool, live_neighbors: usize) -> bool {
         live_neighbors == 3 || (live_neighbors == 2 && current_state == true)
     }
-
-    fn write_to_buffer(&self, buffer: &mut [u32]) {
-        self.cells.iter().zip(buffer).for_each(|(cell, pixel)|
-            *pixel = if *cell { 0x00000000 } else { 0x00ffffff }
-        )
-    }
 }
 
 fn main() {
@@ -79,14 +73,20 @@ fn main() {
     let mut window = Window::new("Conway", WIDTH, HEIGHT, window_options).unwrap();
     let mut buffer: Vec<u32> = vec![0; WIDTH * HEIGHT];
 
-    conway.write_to_buffer(&mut buffer);
+    write_to_buffer(&conway, &mut buffer);
     window.update_with_buffer(&buffer).unwrap();
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
         std::thread::sleep(std::time::Duration::from_millis(20));
 
         conway.tick();
-        conway.write_to_buffer(&mut buffer);
+        write_to_buffer(&conway, &mut buffer);
         window.update_with_buffer(&buffer).unwrap();
     }
+}
+
+fn write_to_buffer(conway: &Conway, buffer: &mut [u32]) {
+    conway.cells.iter().zip(buffer).for_each(|(cell, pixel)|
+        *pixel = if *cell { 0x00000000 } else { 0x00ffffff }
+    )
 }
