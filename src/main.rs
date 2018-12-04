@@ -3,8 +3,8 @@ extern crate rand;
 
 use minifb::{Key, KeyRepeat, Scale, WindowOptions, Window};
 
-const WIDTH: usize = 10;
-const HEIGHT: usize = 10;
+const WIDTH: usize = 50;
+const HEIGHT: usize = 50;
 
 struct Conway {
     width: usize,
@@ -75,9 +75,10 @@ fn main() {
     let mut conway = Conway::new(WIDTH, HEIGHT);
     conway.randomize();
 
-    let window_options = WindowOptions { scale: Scale::X16, ..WindowOptions::default() };
+    let window_options = WindowOptions { scale: Scale::X8, ..WindowOptions::default() };
     let mut window = Window::new("Conway", WIDTH, HEIGHT, window_options).unwrap();
     let mut buffer: Vec<u32> = vec![0; WIDTH * HEIGHT];
+
     conway.write_to_buffer(&mut buffer);
     window.update_with_buffer(&buffer).unwrap();
 
