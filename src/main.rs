@@ -49,6 +49,11 @@ fn main() {
 
 fn write_to_buffer(conway: &conway::Conway, buffer: &mut [u32]) {
     conway.cells().iter().zip(buffer).for_each(|(cell, pixel)|
-        *pixel = if *cell { 0x00000000 } else { 0x00ffffff }
+        *pixel = if *cell {
+            0x00000000
+        } else {
+            let color = ((((*pixel & 0xff) * 3) + 0xff) / 4) as u8;
+            ((color as u32) << 16) + ((color as u32) << 8) + (color as u32)
+        }
     )
 }
