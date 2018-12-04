@@ -18,11 +18,11 @@ impl Conway {
     }
 
     pub fn get(&self, x: usize, y: usize) -> bool {
-        self.cells[x + y * self.height]
+        self.cells[x + y * self.width]
     }
 
     pub fn set(&mut self, x: usize, y: usize, value: bool) {
-        self.cells[x + y * self.height] = value;
+        self.cells[x + y * self.width] = value;
     }
 
     pub fn tick(&mut self) {
