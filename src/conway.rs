@@ -60,3 +60,21 @@ impl Conway {
         live_neighbors == 3 || (live_neighbors == 2 && current_state == true)
     }
 }
+
+impl std::fmt::Display for Conway {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "+{}+\n", "--".repeat(self.width))?;
+
+        for row in self.cells.chunks(self.width) {
+            write!(f, "|")?;
+            for cell in row {
+                write!(f, "{}", if *cell { "()" } else { "  " })?;
+            }
+            write!(f, "|\n")?;
+        }
+
+        write!(f, "+{}+\n", "--".repeat(self.width))?;
+
+        Ok(())
+    }
+}
