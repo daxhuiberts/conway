@@ -1,72 +1,15 @@
 extern crate minifb;
 extern crate rand;
 
+mod conway;
+
 use minifb::{Key, Scale, WindowOptions, Window};
 
 const WIDTH: usize = 50;
 const HEIGHT: usize = 50;
 
-struct Conway {
-    width: usize,
-    height: usize,
-    cells: Vec<bool>,
-}
-
-impl Conway {
-    pub fn new(width: usize, height: usize) -> Self {
-        Conway {
-            width,
-            height,
-            cells: vec![false; width * height],
-        }
-    }
-
-    pub fn get(&self, x: usize, y: usize) -> bool {
-        self.cells[x + y * self.height]
-    }
-
-    pub fn set(&mut self, x: usize, y: usize, value: bool) {
-        self.cells[x + y * self.height] = value;
-    }
-
-    pub fn tick(&mut self) {
-        let mut next = vec![false; self.width * self.height];
-
-        for x in 0..self.width {
-            for y in 0..self.height {
-                let cell = self.get(x, y);
-                let live_neighbors = self.live_neighbor_count(x, y);
-                let new_cell = Self::compute_state(cell, live_neighbors);
-                next[x + y * self.width] = new_cell;
-            }
-        }
-
-        self.cells = next;
-    }
-
-    pub fn randomize(&mut self) {
-        for cell in &mut self.cells {
-            *cell = rand::random::<f32>() > 0.5;
-        }
-    }
-
-    fn live_neighbor_count(&self, x: usize, y: usize) -> usize {
-        let offsets = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)];
-
-        offsets.iter().filter(|(xoffset, yoffset)| {
-            let x = (x as isize + xoffset + self.width as isize) % self.width as isize;
-            let y = (y as isize + yoffset + self.height as isize) % self.height as isize;
-            self.get(x as usize, y as usize)
-        }).count()
-    }
-
-    fn compute_state(current_state: bool, live_neighbors: usize) -> bool {
-        live_neighbors == 3 || (live_neighbors == 2 && current_state == true)
-    }
-}
-
 fn main() {
-    let mut conway = Conway::new(WIDTH, HEIGHT);
+    let mut conway = conway::Conway::new(WIDTH, HEIGHT);
     conway.randomize();
 
     let window_options = WindowOptions { scale: Scale::X8, ..WindowOptions::default() };
@@ -85,8 +28,8 @@ fn main() {
     }
 }
 
-fn write_to_buffer(conway: &Conway, buffer: &mut [u32]) {
-    conway.cells.iter().zip(buffer).for_each(|(cell, pixel)|
+fn write_to_buffer(conway: &conway::Conway, buffer: &mut [u32]) {
+    conway.cells().iter().zip(buffer).for_each(|(cell, pixel)|
         *pixel = if *cell { 0x00000000 } else { 0x00ffffff }
     )
 }
