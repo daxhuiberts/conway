@@ -3,7 +3,7 @@ extern crate rand;
 
 mod conway;
 
-use minifb::{Key, Scale, WindowOptions, Window};
+use minifb::{Key, KeyRepeat, Scale, WindowOptions, Window};
 
 const WIDTH: usize = 50;
 const HEIGHT: usize = 50;
@@ -19,11 +19,21 @@ fn main() {
     write_to_buffer(&conway, &mut buffer);
     window.update_with_buffer(&buffer).unwrap();
 
-    while window.is_open() && !window.is_key_down(Key::Escape) {
-        std::thread::sleep(std::time::Duration::from_millis(20));
+    let mut pauze = false;
+    let mut millis = 50;
 
-        conway.tick();
-        write_to_buffer(&conway, &mut buffer);
+    while window.is_open() && !window.is_key_down(Key::Escape) {
+        std::thread::sleep(std::time::Duration::from_millis(millis));
+
+        if window.is_key_pressed(Key::Space, KeyRepeat::Yes) {
+            pauze = !pauze;
+        }
+
+        if !pauze {
+            conway.tick();
+            write_to_buffer(&conway, &mut buffer);
+        }
+
         window.update_with_buffer(&buffer).unwrap();
     }
 }
