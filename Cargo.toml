@@ -6,3 +6,4 @@ authors = ["Dax Huiberts <daxhuiberts@gmail.com>"]
 [dependencies]
 minifb = "*"
 rand = "0.6"
+structopt = "*"
