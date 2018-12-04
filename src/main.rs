@@ -1,4 +1,5 @@
 extern crate minifb;
+extern crate rand;
 
 use minifb::{Key, KeyRepeat, Scale, WindowOptions, Window};
 
@@ -43,6 +44,12 @@ impl Conway {
         self.cells = next;
     }
 
+    pub fn randomize(&mut self) {
+        for cell in &mut self.cells {
+            *cell = rand::random::<f32>() > 0.5;
+        }
+    }
+
     fn live_neighbor_count(&self, x: usize, y: usize) -> usize {
         let offsets = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)];
 
@@ -66,12 +73,7 @@ impl Conway {
 
 fn main() {
     let mut conway = Conway::new(WIDTH, HEIGHT);
-
-    conway.set(0, 1, true);
-    conway.set(1, 2, true);
-    conway.set(2, 0, true);
-    conway.set(2, 1, true);
-    conway.set(2, 2, true);
+    conway.randomize();
 
     let window_options = WindowOptions { scale: Scale::X16, ..WindowOptions::default() };
     let mut window = Window::new("Conway", WIDTH, HEIGHT, window_options).unwrap();
