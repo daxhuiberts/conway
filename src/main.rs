@@ -1,8 +1,3 @@
-extern crate minifb;
-extern crate rand;
-#[macro_use]
-extern crate structopt;
-
 mod conway;
 
 use minifb::{Key, KeyRepeat, Scale, WindowOptions, Window};
@@ -41,7 +36,7 @@ fn main() {
             write_to_buffer(&conway, &mut buffer);
         }
 
-        window.update_with_buffer(&buffer).unwrap();
+        window.update_with_buffer(&buffer, opt.width, opt.height).unwrap();
 
         std::thread::sleep(std::time::Duration::from_millis(opt.speed));
     }
