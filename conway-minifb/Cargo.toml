@@ -1,0 +1,10 @@
+[package]
+name = "conway-minifb"
+version = "0.1.0"
+authors = ["Dax Huiberts <daxhuiberts@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+minifb = "*"
+structopt = "*"
+conway-lib = { path = "../conway-lib" }

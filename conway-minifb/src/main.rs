@@ -1,5 +1,3 @@
-mod conway;
-
 use minifb::{Key, KeyRepeat, MouseButton, MouseMode, Scale, WindowOptions, Window};
 use structopt::StructOpt;
 
@@ -23,7 +21,7 @@ fn main() {
     let opt = Opt::from_args();
     println!("{:?}", opt);
 
-    let mut conway = conway::Conway::new(opt.width, opt.height);
+    let mut conway = conway_lib::Conway::new(opt.width, opt.height);
     conway.randomize();
 
     let window_options = WindowOptions { scale: Scale::X8, ..WindowOptions::default() };
@@ -59,7 +57,7 @@ fn main() {
     }
 }
 
-fn write_to_buffer(conway: &conway::Conway, buffer: &mut [u32], fgcolor: u32, bgcolor: u32, fade: u32) {
+fn write_to_buffer(conway: &conway_lib::Conway, buffer: &mut [u32], fgcolor: u32, bgcolor: u32, fade: u32) {
     conway.cells().iter().zip(buffer).for_each(|(cell, pixel)|
         *pixel = if *cell {
             fgcolor
