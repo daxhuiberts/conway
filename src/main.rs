@@ -9,8 +9,14 @@ struct Opt {
     width: usize,
     #[structopt(long = "height", default_value = "100")]
     height: usize,
+    #[structopt(long = "fgcolor", default_value = "0")]
+    fgcolor: u32,
+    #[structopt(long = "bgcolor", default_value = "16777215")]
+    bgcolor: u32,
     #[structopt(long = "speed", default_value = "20")]
     speed: u64,
+    #[structopt(long = "fade", default_value = "0")]
+    fade: u32,
 }
 
 fn main() {
@@ -33,7 +39,7 @@ fn main() {
 
         if !pauze {
             conway.tick();
-            write_to_buffer(&conway, &mut buffer);
+            write_to_buffer(&conway, &mut buffer, opt.fgcolor, opt.bgcolor, opt.fade);
         }
 
         window.update_with_buffer(&buffer, opt.width, opt.height).unwrap();
@@ -42,13 +48,14 @@ fn main() {
     }
 }
 
-fn write_to_buffer(conway: &conway::Conway, buffer: &mut [u32]) {
+fn write_to_buffer(conway: &conway::Conway, buffer: &mut [u32], fgcolor: u32, bgcolor: u32, fade: u32) {
     conway.cells().iter().zip(buffer).for_each(|(cell, pixel)|
         *pixel = if *cell {
-            0x00000000
+            fgcolor
         } else {
-            let color = ((((*pixel & 0xff) * 3) + 0xff) / 4) as u8;
-            ((color as u32) << 16) + ((color as u32) << 8) + (color as u32)
+            [0, 8, 16, 24].iter().map(|shift| {
+                (((((*pixel >> shift) & 0xffu32) * fade) + ((bgcolor >> shift) & 0xffu32)) / (fade + 1)) << shift
+            }).sum()
         }
     )
 }
