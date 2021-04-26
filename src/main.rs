@@ -1,6 +1,6 @@
 mod conway;
 
-use minifb::{Key, KeyRepeat, Scale, WindowOptions, Window};
+use minifb::{Key, KeyRepeat, MouseButton, MouseMode, Scale, WindowOptions, Window};
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -35,6 +35,17 @@ fn main() {
     while window.is_open() && !window.is_key_down(Key::Escape) {
         if window.is_key_pressed(Key::Space, KeyRepeat::Yes) {
             pauze = !pauze;
+        }
+
+        if window.get_mouse_down(MouseButton::Left) {
+            if let Some((x, y)) = window.get_mouse_pos(MouseMode::Discard) {
+                for xx in 0..opt.width {
+                    conway.set(xx, y as usize, true);
+                }
+                for yy in 0..opt.height {
+                    conway.set(x as usize, yy, true);
+                }
+            }
         }
 
         if !pauze {
