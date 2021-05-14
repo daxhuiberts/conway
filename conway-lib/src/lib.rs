@@ -13,6 +13,14 @@ impl Conway {
         }
     }
 
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
+    }
+
     pub fn cells(&self) -> &Vec<bool> {
         &self.cells
     }
@@ -44,6 +52,16 @@ impl Conway {
         for cell in &mut self.cells {
             *cell = rand::random::<f32>() > 0.5;
         }
+    }
+
+    pub fn each_cell_alive<F>(&self, filter: bool, mut f: F)
+            where F: FnMut(usize, usize, bool) {
+        self.cells.iter()
+                .enumerate()
+                .filter(|(_index, &cell)| !filter || cell)
+                .for_each(|(index, &cell)| {
+            f(index % self.width, index / self.width, cell);
+        });
     }
 
     fn live_neighbor_count(&self, x: usize, y: usize) -> usize {
