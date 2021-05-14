@@ -11,8 +11,8 @@ fn main() {
     let delay = 10;
     let delay = delay as f64 / 1000.0;
 
-    let mut game = Conway::new(width, height);
-    game.randomize();
+    let mut conway = Conway::new(width, height);
+    conway.randomize();
 
     // let mut fps: VecDeque<Instant> = VecDeque::with_capacity(128);
     let mut time = 0f64;
@@ -44,7 +44,7 @@ fn main() {
             window.draw_2d(&event, |context, graphics, _device| {
                 clear([1.0, 1.0, 1.0, 1.0], graphics);
 
-                game.each_cell_alive(true, |x, y, alive| {
+                conway.each_cell_alive(true, |x, y, alive| {
                     let color = if alive { [0.0, 0.0, 0.0, 1.0] } else { [1.0, 1.0, 0.0, 1.0] };
                     let position = [(x * SIZE) as f64, (y * SIZE) as f64, SIZE as f64, SIZE as f64];
                     rectangle(color, position, context.transform, graphics);
@@ -62,7 +62,7 @@ fn main() {
 
                 // let elapsed = start.elapsed();
 
-                // let string = format!("fps: {}; elasped: {}; iteration: {}", fps.len(), elapsed.as_secs(), game.get_count());
+                // let string = format!("fps: {}; elasped: {}; iteration: {}", fps.len(), elapsed.as_secs(), conway.get_count());
                 // text([1.0, 0.0, 0.0, 1.0], 20, &string, &mut glyphs, context.transform.trans(0.0, 20.0), graphics).unwrap();
             });
 
@@ -73,7 +73,7 @@ fn main() {
             // total_time += update.dt;
             while time > delay {
                 // let update_begin = Instant::now();
-                game.tick();
+                conway.tick();
                 // updated += update_begin.elapsed();
                 time -= delay;
             }
