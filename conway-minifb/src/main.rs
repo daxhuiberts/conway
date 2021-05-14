@@ -1,5 +1,8 @@
-use minifb::{Key, KeyRepeat, MouseButton, MouseMode, Scale, Window, WindowOptions};
+use conway_lib::Conway;
+use minifb::{Key, KeyRepeat, MouseButton, MouseMode, ScaleMode, Window, WindowOptions};
 use structopt::StructOpt;
+
+const SIZE: usize = 8;
 
 #[derive(StructOpt, Debug)]
 struct Opt {
@@ -21,30 +24,32 @@ fn main() {
     let opt = Opt::from_args();
     println!("{:?}", opt);
 
-    let mut conway = conway_lib::Conway::new(opt.width, opt.height);
-    conway.randomize();
-
     let window_options = WindowOptions {
-        scale: Scale::X8,
+        resize: true,
+        scale_mode: ScaleMode::AspectRatioStretch,
         ..WindowOptions::default()
     };
-    let mut window = Window::new("Conway", opt.width, opt.height, window_options).unwrap();
-    let mut buffer: Vec<u32> = vec![0; opt.width * opt.height];
+    let mut window = Window::new("Conway", opt.width * SIZE, opt.height * SIZE, window_options).unwrap();
 
+    let mut conway = get_conway(None, get_window_size(&window));
+    let mut buffer: Vec<u32> = vec![0; conway.width() * conway.height()];
     let mut pauze = false;
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
+        conway = get_conway(Some(conway), get_window_size(&window));
+        buffer.resize(conway.width() * conway.height(), 0);
+
         if window.is_key_pressed(Key::Space, KeyRepeat::Yes) {
             pauze = !pauze;
         }
 
         if window.get_mouse_down(MouseButton::Left) {
             if let Some((x, y)) = window.get_mouse_pos(MouseMode::Discard) {
-                for xx in 0..opt.width {
-                    conway.set(xx, y as usize, true);
+                for xx in 0..conway.width() {
+                    conway.set(xx, y as usize / SIZE, true);
                 }
-                for yy in 0..opt.height {
-                    conway.set(x as usize, yy, true);
+                for yy in 0..conway.height() {
+                    conway.set(x as usize / SIZE, yy, true);
                 }
             }
         }
@@ -55,11 +60,26 @@ fn main() {
         }
 
         window
-            .update_with_buffer(&buffer, opt.width, opt.height)
+            .update_with_buffer(&buffer, conway.width(), conway.height())
             .unwrap();
 
         std::thread::sleep(std::time::Duration::from_millis(opt.speed));
     }
+}
+
+fn get_window_size(window: &Window) -> (usize, usize) {
+    let (width, height) = window.get_size();
+    (width / SIZE, height / 8)
+}
+
+fn get_conway(conway: Option<Conway>, (width, height): (usize, usize)) -> Conway {
+    conway.map_or_else(|| Conway::random(width, height), |conway|
+        if width != conway.width() || height != conway.height() {
+            Conway::random(width, height)
+        } else {
+            conway
+        }
+    )
 }
 
 fn write_to_buffer(

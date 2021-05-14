@@ -13,6 +13,12 @@ impl Conway {
         }
     }
 
+    pub fn random(width: usize, height: usize) -> Self {
+        let mut conway = Self::new(width, height);
+        conway.randomize();
+        conway
+    }
+
     pub fn width(&self) -> usize {
         self.width
     }
