@@ -90,23 +90,23 @@ impl Conway {
     }
 
     fn compute_state(current_state: bool, live_neighbors: usize) -> bool {
-        live_neighbors == 3 || (live_neighbors == 2 && current_state == true)
+        live_neighbors == 3 || (live_neighbors == 2 && current_state)
     }
 }
 
 impl std::fmt::Display for Conway {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "+{}+\n", "--".repeat(self.width))?;
+        writeln!(f, "+{}+", "--".repeat(self.width))?;
 
         for row in self.cells.chunks(self.width) {
             write!(f, "|")?;
             for cell in row {
                 write!(f, "{}", if *cell { "()" } else { "  " })?;
             }
-            write!(f, "|\n")?;
+            writeln!(f, "|")?;
         }
 
-        write!(f, "+{}+\n", "--".repeat(self.width))?;
+        writeln!(f, "+{}+", "--".repeat(self.width))?;
 
         Ok(())
     }

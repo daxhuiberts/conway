@@ -6,8 +6,8 @@ use std::thread::sleep;
 use termion::screen::AlternateScreen;
 use termion::terminal_size;
 
-const ALIVE_STR: &'static str = "()";
-const DEAD_STR: &'static str = "  ";
+const ALIVE_STR: &str = "()";
+const DEAD_STR: &str = "  ";
 
 fn main() {
     let (width, height) = terminal_size().unwrap();
@@ -37,7 +37,7 @@ fn main() {
         conway.each_cell_alive(false, |x, y, alive| {
             write!(screen, "{}", if alive { ALIVE_STR } else { DEAD_STR }).unwrap();
             if x + 1 == conway.width() && y + 1 != conway.height() {
-                write!(screen, "\n").unwrap();
+                writeln!(screen).unwrap();
             }
         });
 
