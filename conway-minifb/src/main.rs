@@ -1,4 +1,4 @@
-use minifb::{Key, KeyRepeat, MouseButton, MouseMode, Scale, WindowOptions, Window};
+use minifb::{Key, KeyRepeat, MouseButton, MouseMode, Scale, Window, WindowOptions};
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -24,7 +24,10 @@ fn main() {
     let mut conway = conway_lib::Conway::new(opt.width, opt.height);
     conway.randomize();
 
-    let window_options = WindowOptions { scale: Scale::X8, ..WindowOptions::default() };
+    let window_options = WindowOptions {
+        scale: Scale::X8,
+        ..WindowOptions::default()
+    };
     let mut window = Window::new("Conway", opt.width, opt.height, window_options).unwrap();
     let mut buffer: Vec<u32> = vec![0; opt.width * opt.height];
 
@@ -51,20 +54,33 @@ fn main() {
             write_to_buffer(&conway, &mut buffer, opt.fgcolor, opt.bgcolor, opt.fade);
         }
 
-        window.update_with_buffer(&buffer, opt.width, opt.height).unwrap();
+        window
+            .update_with_buffer(&buffer, opt.width, opt.height)
+            .unwrap();
 
         std::thread::sleep(std::time::Duration::from_millis(opt.speed));
     }
 }
 
-fn write_to_buffer(conway: &conway_lib::Conway, buffer: &mut [u32], fgcolor: u32, bgcolor: u32, fade: u32) {
-    conway.cells().iter().zip(buffer).for_each(|(cell, pixel)|
+fn write_to_buffer(
+    conway: &conway_lib::Conway,
+    buffer: &mut [u32],
+    fgcolor: u32,
+    bgcolor: u32,
+    fade: u32,
+) {
+    conway.cells().iter().zip(buffer).for_each(|(cell, pixel)| {
         *pixel = if *cell {
             fgcolor
         } else {
-            [0, 8, 16, 24].iter().map(|shift| {
-                (((((*pixel >> shift) & 0xffu32) * fade) + ((bgcolor >> shift) & 0xffu32)) / (fade + 1)) << shift
-            }).sum()
+            [0, 8, 16, 24]
+                .iter()
+                .map(|shift| {
+                    (((((*pixel >> shift) & 0xffu32) * fade) + ((bgcolor >> shift) & 0xffu32))
+                        / (fade + 1))
+                        << shift
+                })
+                .sum()
         }
-    )
+    })
 }

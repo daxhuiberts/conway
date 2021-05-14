@@ -55,23 +55,38 @@ impl Conway {
     }
 
     pub fn each_cell_alive<F>(&self, filter: bool, mut f: F)
-            where F: FnMut(usize, usize, bool) {
-        self.cells.iter()
-                .enumerate()
-                .filter(|(_index, &cell)| !filter || cell)
-                .for_each(|(index, &cell)| {
-            f(index % self.width, index / self.width, cell);
-        });
+    where
+        F: FnMut(usize, usize, bool),
+    {
+        self.cells
+            .iter()
+            .enumerate()
+            .filter(|(_index, &cell)| !filter || cell)
+            .for_each(|(index, &cell)| {
+                f(index % self.width, index / self.width, cell);
+            });
     }
 
     fn live_neighbor_count(&self, x: usize, y: usize) -> usize {
-        let offsets = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)];
+        let offsets = [
+            (-1, -1),
+            (-1, 0),
+            (-1, 1),
+            (0, -1),
+            (0, 1),
+            (1, -1),
+            (1, 0),
+            (1, 1),
+        ];
 
-        offsets.iter().filter(|(xoffset, yoffset)| {
-            let x = (x as isize + xoffset + self.width as isize) % self.width as isize;
-            let y = (y as isize + yoffset + self.height as isize) % self.height as isize;
-            self.get(x as usize, y as usize)
-        }).count()
+        offsets
+            .iter()
+            .filter(|(xoffset, yoffset)| {
+                let x = (x as isize + xoffset + self.width as isize) % self.width as isize;
+                let y = (y as isize + yoffset + self.height as isize) % self.height as isize;
+                self.get(x as usize, y as usize)
+            })
+            .count()
     }
 
     fn compute_state(current_state: bool, live_neighbors: usize) -> bool {

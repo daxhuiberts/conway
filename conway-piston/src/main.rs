@@ -18,7 +18,10 @@ fn main() {
     let mut time = 0f64;
     // let mut total_time = 0f64;
 
-    let window_settings = WindowSettings::new("Hello Piston!", [(width * SIZE) as u32, (height * SIZE) as u32]);
+    let window_settings = WindowSettings::new(
+        "Hello Piston!",
+        [(width * SIZE) as u32, (height * SIZE) as u32],
+    );
     let mut window: PistonWindow = window_settings.exit_on_esc(true).build().unwrap();
 
     // let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
@@ -45,8 +48,17 @@ fn main() {
                 clear([1.0, 1.0, 1.0, 1.0], graphics);
 
                 conway.each_cell_alive(true, |x, y, alive| {
-                    let color = if alive { [0.0, 0.0, 0.0, 1.0] } else { [1.0, 1.0, 0.0, 1.0] };
-                    let position = [(x * SIZE) as f64, (y * SIZE) as f64, SIZE as f64, SIZE as f64];
+                    let color = if alive {
+                        [0.0, 0.0, 0.0, 1.0]
+                    } else {
+                        [1.0, 1.0, 0.0, 1.0]
+                    };
+                    let position = [
+                        (x * SIZE) as f64,
+                        (y * SIZE) as f64,
+                        SIZE as f64,
+                        SIZE as f64,
+                    ];
                     rectangle(color, position, context.transform, graphics);
                 });
 

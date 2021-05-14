@@ -1,10 +1,10 @@
-use std::io::{Write, stdout};
-use std::sync::Arc;
+use conway_lib::Conway;
+use std::io::{stdout, Write};
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use std::thread::sleep;
 use termion::screen::AlternateScreen;
 use termion::terminal_size;
-use conway_lib::Conway;
 
 const ALIVE_STR: &'static str = "()";
 const DEAD_STR: &'static str = "  ";
@@ -22,7 +22,8 @@ fn main() {
     let r = running.clone();
     ctrlc::set_handler(move || {
         r.clone().store(false, Ordering::SeqCst);
-    }).unwrap();
+    })
+    .unwrap();
 
     let mut screen = AlternateScreen::from(stdout());
 
